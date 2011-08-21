@@ -5,7 +5,7 @@ require 'rss/1.0'
 require 'rss/2.0'
 require 'open-uri'
 
-require 'net/https'
+require 'instapaper'
 
 get '/' do
   content_type :html
@@ -25,13 +25,13 @@ get '/auth' do
 end
 
 post '/testauth' do
-  res = Net::HTTP.post_form(URI.parse("http://www.instapaper.com/api/authenticate"),
-  {'username' => params[:username], 'password' => params[:password]})
-  case res
-  when Net::HTTPSuccess, Net::HTTPRedirection
-    "Good!"
-  else
-    "Oh noes, incorrect username/pass"
+  base = Instapaper::Base.new(params[:username], params[:password])
+
+  case base.authenticate
+  when Instapaper::Response::AuthenticationSuccessResponse
+    "Yay"
+  else Instapaper::Response::AuthenticationInvalidResponse
+    "nooooes"
   end
 end
 

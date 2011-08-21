@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'sinatra'
+require 'json'
 
 require 'rss/1.0'
 require 'rss/2.0'
@@ -12,12 +13,11 @@ get '/' do
   erb :index
 end
 
-post '/add' do
+get '/rss' do
   params[:url] = "http://feeds.feedburner.com/rudiusmedia/rch" # Dev link
   rss = get_rss(params[:url])
-  @items = rss.items
-  @channel = rss.channel
-  erb :list
+  content_type :json
+  rss.to_json
 end
 
 get '/auth' do
@@ -41,4 +41,18 @@ def get_rss(url)
     response = http.read
   end
   RSS::Parser.parse(response, false)
+end
+
+class RSS::Rss
+  def to_json
+    ret = Array.new()
+    items.each do |rss|
+      ret << {
+        "title"       => rss.title,
+        "link"        => rss.link,
+        "description" => rss.description
+      }
+    end
+    ret.to_json
+  end
 end

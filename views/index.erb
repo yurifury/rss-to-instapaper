@@ -1,5 +1,28 @@
+<script type = "text/template" id="feeds-template">
+<h1>RSS Feeds</h1>
+<ul class="feeds">
+</ul>
+</script>
+
+<script type="text/template" id="rss-feed-template">
+<h3>{{ title }}</h3>
+<p>{{ link }}</p>
+</script>
+
+<script type="text/template" id="rss-form-template">
 <form action="/add" method="POST">
-	<label for="url">RSS URL</label>
-	<input type="text" name="url" id="url" />
-	<input type="submit" value="Fetch!" />
+<label for="url">RSS URL</label>
+<input type="text" name = "url" id="url" />
+<input type="submit" value = "Fetch!" />
 </form>
+</script>
+<script type="application/javascript">
+jQuery(function() {
+	window.RSSInstapaper = new RSSPaper();
+	Backbone.history.start();
+	window.Feeds.fetch();
+});
+</script>
+
+<div id="container">
+</div>

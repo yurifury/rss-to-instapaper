@@ -5,10 +5,6 @@
   };
   
   window.RSSFeed = Backbone.Model.extend({
-    initialize: function(){
-      
-      console.log(this.get('title'));
-    }
   });
   
   window.RSSFeeds = Backbone.Collection.extend({
@@ -65,7 +61,6 @@
       },
       
       initialize: function() {
-        console.log('yes');
         this.rssListView = new RSSListView({
           collection: window.Feeds
         });

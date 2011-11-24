@@ -13,11 +13,10 @@ get '/' do
   erb :index
 end
 
-get '/rss' do
-  params[:url] = "http://feeds.feedburner.com/rudiusmedia/rch" # Dev link
-  rss = get_rss(params[:url])
+get '/rss' do  
   content_type :json
-  rss.to_json
+  @rsspaper = RSSPaper.new
+  @rsspaper.fetch(params[:url]).to_json
 end
 
 get '/auth' do
@@ -36,17 +35,26 @@ post '/testauth' do
 end
 
 def get_rss(url)
-  response = ""
-  open(url) do |http|
-    response = http.read
-  end
-  RSS::Parser.parse(response, false)
+
 end
 
-class RSS::Rss
+class RSSPaper
+  attr_reader :feed, :items, :channel, :url
+  def fetch(url)
+    @url ||= url
+    response = ""
+    open(@url) do |http|
+      response = http.read
+    end
+    @feed = RSS::Parser.parse(response, false)
+    @items = @feed.items
+    @channel = @feed.channel
+    return self
+  end
+  
   def to_json
     ret = Array.new()
-    items.each do |rss|
+    @feed.items.each do |rss|
       ret << {
         "title"       => rss.title,
         "link"        => rss.link,
@@ -55,4 +63,7 @@ class RSS::Rss
     end
     ret.to_json
   end
+  
+  
+  
 end
